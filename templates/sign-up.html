@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable-=no, inital-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Hello</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="body">
+    <div class="container">
+        <h2>Sign Up</h2>
+        <form action="http://localhost:5000/shop" method="post">
+            <label>Username:</label>
+            <input type="text" name="username" requried>
+            <label>Password:</label>
+            <input type="password" name="password" requried>
+            <label>Email:</label>
+            <input type="email" name="email" requried>
+            <button type="submit">Sign Up</button>
+            <h6>already signed up? <a href="http://localhost:5000/sign-in">Click here</a></h6>
+
+        </form>
+    </div>
+</body>
