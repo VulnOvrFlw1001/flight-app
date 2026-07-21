@@ -1,4 +1,4 @@
-import psycopg2, secrets
+import psycopg2, secrets, random, string
 from flask import Flask, render_template, request, session
 from datetime import datetime
 
@@ -51,4 +51,27 @@ def ticket_page():
                              "price": flight_match[0][5]}
             return render_template('ticket.html', available_flights = flight_object, action = 'buy')
 
+def generate_ticket_id():
+    length = 10
+    chars = string.ascii_lowercase + string.digits
+    return ''.join(random.choice(chars) for _ in range(length))
+
+@app.route('/payment', methods = ['POST'])
+def purchase_page():
+    if request.method == 'POST':
+        session['user_departure'] = request.form['departure']
+        session['user_destination'] = request.form['destination']
+        session['user_departure_time'] = request.form['departure_time']
+        session['user_arrival_time'] = request.form['arrival_time']
+        session['user_price'] = request.form['price']
+        return render_template('payment.html')
+app.run()
+
+@app.route("/success", methods = ['POST'])
+def success_page():
+    if request.method == 'POST':
+        ticket_id = generate_ticket_id()
+        cursor.execute(f"INSERT INTO tickets (ticket_number,departure,arrival,departure_time,arrival_time,ticket_price,users) VALUES ('{ticket_id}','{session["user_departure"]}','{session["user_destination"]})','{session['user_departure_time']}','{session['user_price']}','{session['username']}')")
+        conn.commit()
+        return render_template("success.html", ticket_id = ticket_id)
 app.run()

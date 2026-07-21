@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable-=no, inital-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Payment</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='payment.css') }}">
+</head>
+<body class="body">
+<div class="payment-container">
+        <h1>Payment Information</h1>
+        <form action="https://YOUR_DOMAIN/success" method="post">
+            <div class="form-group">
+                <label>Name on Card</label>
+                <input type="text" name="name" required>
+            </div>
+            <div class="form-group">
+                <label>Card Number</label>
+                <input type="text" name="card-number" required>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Expiration Date</label>
+                    <input type="text" name="expiration" required>
+                </div>
+                <div class="form-group">
+                    <label>CVV</label>
+                    <input type="text" name="cvv" required>
+                </div>
+            </div>
+            <button type="submit">Submit Payment</button>
+        </form>
+    </div>
+</body>
