@@ -15,4 +15,24 @@ def sign_up_page():
 def sign_in_page():
     return render_template("sign-in.html")
 
+@app.route('/shop', methods = ['POST'])
+def shop_page():
+    if request.method == 'POST':
+        if request.referrer == "http://localhost:5000/":
+            email = request.form['email']
+            session['username'] = request.form['username']
+            password = request.form['password']
+            cursor.execute(f"INSERT INTO users (name,password,email) VALUES ('{session['username']}','{password}','{email}')")
+            conn.commit()
+            return render_template('shop.html', name = session['username'])
+        elif request.referrer == "http://localhost:5000/sign-in":
+            session['username'] = request.form['username']
+            password = request.form['password']
+            cursor.execute(f"SELECT password FROM users where name = '{session['username']}'")
+            real_password = cursor.fetchall()
+            if real_password[0][0] == password:
+                return render_template('shop.html', name = session['username'])
+            else:
+                return render_template('wrong.html')
+
 app.run()
