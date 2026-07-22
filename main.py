@@ -65,4 +65,16 @@ def purchase_page():
       session['user_price'] = request.form['price']
       return render_template('payment.html')
 
+def generate_ticket_id():
+    length = 10
+    chars = string.ascii_lowercase + string.digits
+    return ''.join(random.choice(chars) for _ in range(length))
+
+@app.route("/success", methods = ['POST'])
+def success_page():
+    if request.method == 'POST':
+        ticket_id = generate_ticket_id()
+        cursor.execute(f"INSERT INTO tickets (ticket_number,departure,arrival,departure_time,arrival_time,ticket_price,users) VALUES ('{ticket_id}','{session['user_departure']}','{session['user_destination']}','{session['user_departure_time']}','{session['user_arrival_time']}','{session['user_price']}','{session['username']}')")
+        conn.commit()
+        return render_template("success.html", ticket_id = ticket_id)
 app.run()
