@@ -28,4 +28,27 @@
             <button tpe="submit">Search Ticket</button>
         </form>
     </div>
+{% if flights|length > 0 %}
+<div class="existing-flights">
+    <h1>Your Flights</h1>
+    <div class="container">
+        <table>
+            {% for flight in flights %}
+            <tr>
+                <th>Departure</th>
+                <th>Destination</th>
+                <th>Departure-Time</th>
+                <th>Arrival-Time</th>
+            </tr>
+            <tr>
+                <td>{{ flight[0] }}</td>
+                <td>{{ flight[1] }}</td>
+                <td>{{ flight[2] }}</td>
+                <td>{{ flight[3] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endif %}
 </body>
