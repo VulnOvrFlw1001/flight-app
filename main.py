@@ -64,7 +64,7 @@ def purchase_page():
       session['user_arrival_time'] = request.form['arrival_time']
       session['user_price'] = request.form['price']
       return render_template('payment.html')
-
+  
 def generate_ticket_id():
     length = 10
     chars = string.ascii_lowercase + string.digits
@@ -77,4 +77,18 @@ def success_page():
         cursor.execute(f"INSERT INTO tickets (ticket_number,departure,arrival,departure_time,arrival_time,ticket_price,users) VALUES ('{ticket_id}','{session['user_departure']}','{session['user_destination']}','{session['user_departure_time']}','{session['user_arrival_time']}','{session['user_price']}','{session['username']}')")
         conn.commit()
         return render_template("success.html", ticket_id = ticket_id)
+
+@app.route('/delete', methods = ['POST'])
+def delete_page():
+    if request.method == 'POST':
+        cursor.execute(f"SELECT ticket_number FROM tickets WHERE arrival = '{session['delete-destination']}' AND departure = '{session['delete-departure']}' AND users = '{session['username']}'")
+        correct_ticket_id = cursor.fetchall()
+        ticket_id = request.form['delete-ticket-id']
+        if correct_ticket_id[0][0] == ticket_id:
+            cursor.execute(f"DELETE FROM tickets WHERE ticket_number = '{ticket_id}'")
+            conn.commit()
+            return render_template('delete.html')
+        else:
+            return render_template('wrong.html')
+
 app.run()

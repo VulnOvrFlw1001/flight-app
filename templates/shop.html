@@ -8,24 +8,25 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body class="body">
-    <h1>Hello {{ name }}</h1>
-    <div class="container" style = "float: right; width: 300px;">
+   <h1>Hello {{ name }}</h1>
+    <div class="container" style="float: right; width: 300px;">
         <form action="http://localhost:5000/ticket" method="post">
             <h3>Buy Ticket</h3>
             <label>Departure:</label>
             <input type="text" name="buy-departure" placeholder="where to..">
+            <label>Arrival:</label>
             <input type="text" name="buy-destination" placeholder="where to..">
-            <button type=""submit">Search Ticket</button>
+            <button type="submit">Search Ticket</button>
         </form>
     </div>
-    <div class="container" style = "float: left; width: 300px;">
+    <div class="container" style="float: left; width: 300px;">
         <form action="http://localhost:5000/ticket" method="post">
             <h3>Delete Ticket</h3>
             <label>Departure:</label>
-            <input type="text" name="buy-departure" placeholder="where to..">
+            <input type="text" name="delete-departure" placeholder="where to..">
             <label>Arrival:</label>
             <input type="text" name="delete-destination" placeholder="where to..">
-            <button tpe="submit">Search Ticket</button>
+            <button type="submit">Search Ticket</button>
         </form>
     </div>
 {% if flights|length > 0 %}
@@ -35,10 +36,10 @@
         <table>
             {% for flight in flights %}
             <tr>
-                <th>Departure</th>
-                <th>Destination</th>
-                <th>Departure-Time</th>
-                <th>Arrival-Time</th>
+                <th>departure</th>
+                <th>destination</th>
+                <th>departure-time</th>
+                <th>arrival-time</th>
             </tr>
             <tr>
                 <td>{{ flight[0] }}</td>
