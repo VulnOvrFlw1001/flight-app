@@ -1,8 +1,8 @@
-import psycopg2, secrets, random, string
+import psycopg2, secrets, random, string, os
 from flask import Flask, render_template, request, session
 from datetime import datetime
 
-conn = psycopg2.connect(database="postgres",user="postgres",password="admin",host="localhost",port="5432")
+conn =  psycopg2.connect(database=os.environ['POSTGRES_DB'],user=os.environ['POSTGRES_USER'],password=os.environ['POSTGRES_PASSWORD'],host=os.environ['POSTGRES_HOST'],port="5432")
 cursor = conn.cursor()
 
 app = Flask(__name__)
