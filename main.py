@@ -91,4 +91,9 @@ def delete_page():
         else:
             return render_template('wrong.html')
 
+@app.route('delete', methods = ['POST'])
+def delete_page():
+    if request.method == 'POST':
+        cursor.execute(f"SELECT ticket_number FROM tickets WHERE arrival = '{session['delete-destination']}' AND departure = '{session['delete-departure']}' AND users = '{se}")
+
 app.run()
