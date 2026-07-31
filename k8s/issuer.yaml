@@ -13,5 +13,5 @@ spec:
         cloudDNS:
           project: devops-project-503800
           serviceAccountSecretRef:
-            name: dns-reslover-key
+            name: dns-resolver-key
             key: key.json

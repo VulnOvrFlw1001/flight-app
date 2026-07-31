@@ -20,14 +20,14 @@ def sign_in_page():
 @app.route('/shop', methods = ['POST'])
 def shop_page():
     if request.method == 'POST':
-        if request.referrer == "http://localhost:5000/":
+        if request.referrer == "https://flight-app.flightsnotfeelings.shop/":
             email = request.form['email']
             session['username'] = request.form['username']
             password = request.form['password']
             cursor.execute(f"INSERT INTO users (name,password,email) VALUES ('{session['username']}','{password}','{email}')")
             conn.commit()
             return render_template('shop.html', name = session['username'])
-        elif request.referrer == "http://localhost:5000/sign-in": 
+        elif request.referrer == "https://flight-app.flightsnotfeelings.shop/sign-in": 
             session['username'] = request.form['username']
             password = request.form['password']
             cursor.execute(f"SELECT password FROM users where name = '{session['username']}'")
@@ -91,6 +91,5 @@ def delete_page():
             return render_template('delete.html')
         else:
             return render_template('wrong.html')
-
-app.run()
+app.run(host="0.0.0.0")
 
