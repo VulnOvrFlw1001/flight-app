@@ -220,8 +220,7 @@ data:
     (NOW() + INTERVAL '1 day' * FLOOR(RANDOM() * 30))::DATE + TIME  '00:00:00' + INTERVAL '1 hour' * FLOOR(RANDOM() * 23),
     CAST((RANDOM() * 500 + 50) AS NUMERIC(10,2))
     FROM states s1 
-    CROSS JOIN states s2;
-    WHERE s1.state_name <> s2.state_name;
+    CROSS JOIN states s2 WHERE s1.state_name <> s2.state_name;
 
     UPDATE flights
     SET arrival_time = departure_time, departure_time = arrival_time

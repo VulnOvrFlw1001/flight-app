@@ -2,6 +2,7 @@ import psycopg2, secrets, random, string, os
 from flask import Flask, render_template, request, session
 from datetime import datetime
 
+
 conn =  psycopg2.connect(database=os.environ['POSTGRES_DB'],user=os.environ['POSTGRES_USER'],password=os.environ['POSTGRES_PASSWORD'],host=os.environ['POSTGRES_HOST'],port="5432")
 cursor = conn.cursor()
 
@@ -91,9 +92,5 @@ def delete_page():
         else:
             return render_template('wrong.html')
 
-@app.route('delete', methods = ['POST'])
-def delete_page():
-    if request.method == 'POST':
-        cursor.execute(f"SELECT ticket_number FROM tickets WHERE arrival = '{session['delete-destination']}' AND departure = '{session['delete-departure']}' AND users = '{se}")
-
 app.run()
+

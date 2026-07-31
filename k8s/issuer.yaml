@@ -1,0 +1,17 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: flight-app-issuer
+spec:
+  acme:
+    email: hansjpedronan@gmail.com
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: private-key
+    solvers:
+    - dns01:
+        cloudDNS:
+          project: devops-project-503800
+          serviceAccountSecretRef:
+            name: dns-reslover-key
+            key: key.json
