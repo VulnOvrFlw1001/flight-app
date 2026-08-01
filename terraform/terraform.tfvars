@@ -1,5 +1,5 @@
 gcp_project = "devops-project-503800"
-key_path = "C:\\Users\\hansj\\Downloads\\devops-project-503800-141ec14e66f1.json"
+//key_path = "C:\\Users\\hansj\\Downloads\\devops-project-503800-141ec14e66f1.json"
 project_zone = "us-central1-a"
 
 //GKE

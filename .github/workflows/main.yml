@@ -1,1 +1,45 @@
 name: pipeline
+
+on:
+    push:
+        branches:
+            - 'main'
+
+jobs: 
+    application:
+        name: pipeline
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+            
+            - name: Terraform Set Up
+              uses: hashicorp/setup-terraform@v2
+            
+            - name: init
+              run: |
+               cd terraform
+               terraform init
+              env: 
+                GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+            
+            - name: plan
+              run: |
+               cd terraform
+               terraform plan
+               echo ${{ steps.plan.outputs.stdout }}
+               echo ${{ steps.plan.outputs.stderr }}
+               echo ${{ steps.plan.outputs.exitcode }}
+              env:
+                GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+            
+            - name: apply
+              run: |
+               cd terraform
+               terraform apply -auto-approve
+               echo ${{ steps.apply.outputs.stdout }}
+               echo ${{ steps.apply.outputs.stderr }}
+               echo ${{ steps.apply.outputs.exitcode }}
+              env:
+                GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
