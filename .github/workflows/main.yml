@@ -1,11 +1,9 @@
 name: pipeline
-
 on:
     push:
         branches:
             - 'main'
-
-jobs: 
+jobs:
     application:
         name: pipeline
         runs-on: ubuntu-latest
@@ -13,21 +11,21 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v3
-            
+
             - name: Terraform Set Up
               uses: hashicorp/setup-terraform@v2
-            
+
             - name: init
               run: |
                cd terraform
                terraform init
-              env: 
+              env:
                 GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-            
+
             - name: plan
               run: |
                cd terraform
-               terraform plan
+               terraform plan -lock=false
                echo ${{ steps.plan.outputs.stdout }}
                echo ${{ steps.plan.outputs.stderr }}
                echo ${{ steps.plan.outputs.exitcode }}
@@ -37,32 +35,67 @@ jobs:
             - name: apply
               run: |
                cd terraform
-               terraform apply -auto-approve
+               terraform apply -lock=false -auto-approve
                echo ${{ steps.apply.outputs.stdout }}
                echo ${{ steps.apply.outputs.stderr }}
                echo ${{ steps.apply.outputs.exitcode }}
               env:
-                GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}  
-              
-            -  
+                GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+            
+            -
               name: Login to Docker Hub
               uses: docker/login-action@v3
-              with: 
+              with:
                 username: ${{ secrets.DOCKERHUB_USERNAME }}
                 password: ${{ secrets.DOCKERHUB_PASSWORD }}
-    
-            - 
+            -
               name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v3
-            - 
+            -
               name: Build and push
               uses: docker/build-push-action@v6
-              with: 
+              with:
                 push: true
-                tags: ${{ secrets.DOCKERHUB_USERNAME }}/flight-app-demo:github-action-test
+                tags: ${{ secrets.DOCKERHUB_USERNAME }}jpedronan/flight-app:0.0.1
 
-#            - id: 'auth'
-#              name: 'Authenticate to Google Cloud'
-#              uses: 'google-github-actions/auth@v1'
-#              with:
-#                credentials_json: ${{ secrets.GOOGLE_SA_CREDENTIALS }}
+            - id: 'auth'
+              name: 'Authenticate to Google Cloud'
+              uses: 'google-github-actions/auth@v1'
+              with:
+                credentials_json: ${{ secrets.GOOGLE_SA_CREDENTIALS }}
+
+            - name: 'Set up Cloud SDK'
+              uses: 'google-github-actions/setup-gcloud@v1'
+
+            - uses: azure/setup-helm@v4.2.0
+              with:
+                 version: v3.9.4
+
+            - name: Prepare Application Deployment
+              run: |
+                gcloud config set project devops-project-503800
+                gcloud container clusters get-credentials demo-cluster --zone us-central1-a
+                gcloud install kubectl
+                STATIC_IP=$(gcloud compute addresses describe flight-app-static-ip --region us-central1 --format "value(address)")
+ 
+                helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+                helm install my-ingress-nginx ingress-nginx/ingress-nginx --set controller.service.loadBalancerIP=$STATIC_IP --version 4.6.1
+
+                helm repo add jetstack https://charts.jetstack.io
+                helm repo update
+                helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.12.0 --set installCRDs=true
+
+                gcloud iam service-accounts create cert-manager-solver --display-name cert-manager-solver
+                gcloud projects add-iam-policy-binding devops-project-503800 --member serviceAccount:cert-manager-solver@devops-project-503800.iam.gserviceaccount.com --role roles/dns.admin
+                gcloud iam service-accounts keys create key.json --iam-account cert-manager-solver@devops-project-503800.iam.gserviceaccount.com
+
+                echo "waiting for changing nameservers"
+                sleep 300
+
+            - name: Application Deployment
+              run: |
+                kubectl create secret generic creds --from-literal=username=${{ secrets.POSTGRES_USERNAME }} --from-literal=db=postgres --from-literal=host=postgres --from-literal=password=${{ secrets.POSTGRES_PASS }}
+                kubectl create secret generic dns-reslover-key --from-file=key.json=./key.json
+
+                sleep 20
+                kubectl apply -f ./k8s
